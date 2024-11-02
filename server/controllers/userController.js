@@ -31,7 +31,7 @@ class UserController {
                 role
             })
             const token = generedeJwt(user.id, user.email, user.role)
-            return res.status(200).json({message: 'Пользователь зарегистрирован'})
+            return res.status(200).json({message: 'Пользователь зарегистрирован', user, token, role: user.role})
         } catch(e) {
             console.log(e)
             return res.status(500).json({message: 'Ошибка сервера'})
@@ -39,11 +39,27 @@ class UserController {
     }
     
     async login (req, res) {
-        
+        const {login, password} = req.body;
+        try {
+            const user = await Users.findOne({where: {email}})
+            if(!user) {
+                return res.status(404).json({message: 'Пользователь не зарегистрирован'})
+            }
+            const comparePassword = await bcrypt.compare(password, user.password)
+            if(!comparePassword) {
+                return res.status(402).json({message: 'Не верный пароль'})
+            }
+            const token = generedeJwt(user.id, user.email, user.role)
+            return res.status(200).json({message: 'Пользователь авторизован',  user, token, role: user.role})
+        } catch(e) {
+            console.log(e)
+            return res.status(500).json({message: 'Ошмбка сервера'})
+        }
     }
 
     async check (req, res) {
-        
+        const token = generedeJwt(req.user.id, req.user.email, req.user.role)
+        return res.json({token})
     }
 }
 
