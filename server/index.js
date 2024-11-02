@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 
 const sequelize = require('./db');
 const models = require('./models/models');
@@ -14,6 +15,7 @@ app.use(express.json());
 app.use(cors());
 
 app.use('/api', router);
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 const start = async () => {
     try {

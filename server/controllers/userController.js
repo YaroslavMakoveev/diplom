@@ -14,7 +14,7 @@ const generedeJwt = (id, email, role) => {
 class UserController {
     async registration (req, res) {
         const {name, surname, patronymic, email, password, role} = req.body;
-        const img = req.file || req.file.filename;
+        const img = req.file ? req.file.filename: null;
         try {
             const existingUserByEmail = await Users.findOne({where: {email}})
             if(existingUserByEmail) {
@@ -39,7 +39,7 @@ class UserController {
     }
     
     async login (req, res) {
-        const {login, password} = req.body;
+        const {email, password} = req.body;
         try {
             const user = await Users.findOne({where: {email}})
             if(!user) {
@@ -53,7 +53,7 @@ class UserController {
             return res.status(200).json({message: 'Пользователь авторизован',  user, token, role: user.role})
         } catch(e) {
             console.log(e)
-            return res.status(500).json({message: 'Ошмбка сервера'})
+            return res.status(500).json({message: 'Ошибка сервера'})
         }
     }
 
