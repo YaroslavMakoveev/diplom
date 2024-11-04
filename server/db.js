@@ -12,4 +12,6 @@ const sequelize = new Sequelize(
     }
 )
 
+// fhjdsahfjsdhfjkshjkfhsjdfhjhj
+
 module.exports = sequelize;
