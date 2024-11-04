@@ -47,7 +47,7 @@ class UserController {
             }
             const comparePassword = await bcrypt.compare(password, user.password)
             if(!comparePassword) {
-                return res.status(402).json({message: 'Не верный пароль'})
+                return res.status(400).json({message: 'Не верный пароль'})
             }
             const token = generedeJwt(user.id, user.email, user.role)
             return res.status(200).json({message: 'Пользователь авторизован',  user, token, role: user.role})
