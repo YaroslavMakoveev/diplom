@@ -6,6 +6,8 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import Button from 'react-bootstrap/Button';
 import axios from 'axios'
 
+import AdminCheck from './middleware/AdminCheck';
+
 function NavBar() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
@@ -68,11 +70,14 @@ function NavBar() {
           </Nav>
           {isAuthenticated ? (
             <>
-            <Button variant='secondary' className='me-5' onClick={handleLogout}>Выйти</Button>
+              <AdminCheck>
+                <Button variant='warning' className='me-1' href='/admin' style={{width: '30%'}}>Панель администратора</Button>
+              </AdminCheck>
+              <Button variant='secondary' className='me-5' onClick={handleLogout}>Выйти</Button>
             </>
           ) : (
             <>
-            <Button variant='primary' className='me-5' href="/login">Авторизоваться</Button>
+              <Button variant='primary' className='me-5' href="/login">Авторизоваться</Button>
             </>
           )}
         </Navbar.Collapse>
