@@ -1,10 +1,46 @@
 import Container from 'react-bootstrap/Container';
+import React, { useEffect, useState } from 'react';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import Button from 'react-bootstrap/Button';
+import axios from 'axios'
 
 function NavBar() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setIsAuthenticated(false);
+        return;
+      }
+
+      try {
+        const response = await axios.get('http://localhost:3000/api/user/auth', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setIsAuthenticated(true);
+        setUser(response.data); // Предполагается, что ответ содержит информацию о пользователе
+      } catch (error) {
+        setIsAuthenticated(false);
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    setIsAuthenticated(false);
+    setUser(null);
+    window.location.reload()
+  };
   return (
     <Navbar variant='light' expand="lg" className="bg-light">
       <Container fluid>
@@ -20,17 +56,25 @@ function NavBar() {
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="d-flex justify-content-center w-100">
-            <Nav.Link href="#features">Главная</Nav.Link>
-            <Nav.Link href="#pricing">Новости</Nav.Link>
-            <Nav.Link href="#pricing">О нас</Nav.Link>
+            <Nav.Link href="/">Главная</Nav.Link>
+            <Nav.Link href="/news">Новости</Nav.Link>
+            <Nav.Link href="/about">О нас</Nav.Link>
             <NavDropdown title="Еще" id="collapsible-nav-dropdown">
-              <NavDropdown.Item href="#action/3.1">Наши спортсмены</NavDropdown.Item>
-              <NavDropdown.Item href="#action/3.2">Запись на пробное занятие</NavDropdown.Item>
-              <NavDropdown.Item href="#action/3.3">Бронирование татами</NavDropdown.Item>
+              <NavDropdown.Item href="/athlets">Наши спортсмены</NavDropdown.Item>
+              <NavDropdown.Item href="/form">Запись на пробное занятие</NavDropdown.Item>
+              <NavDropdown.Item href="/booking">Бронирование татами</NavDropdown.Item>
               <NavDropdown.Divider />
             </NavDropdown>
           </Nav>
-          <Button variant='primary' className='me-5' href="/login">Авторизоваться</Button>
+          {isAuthenticated ? (
+            <>
+            <Button variant='secondary' className='me-5' onClick={handleLogout}>Выйти</Button>
+            </>
+          ) : (
+            <>
+            <Button variant='primary' className='me-5' href="/login">Авторизоваться</Button>
+            </>
+          )}
         </Navbar.Collapse>
       </Container>
     </Navbar>
